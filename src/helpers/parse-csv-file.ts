@@ -60,9 +60,9 @@ export function parseCSVFile(filePath: string): IPLocationRow[] {
 
     if (row) {
       validRows.push(row);
+    } else {
+      invalidRows.push(i + 1);
     }
-
-    invalidRows.push(i + 1);
   }
 
   app.log.info(`Successfully parsed: ${validRows.length} rows`);
