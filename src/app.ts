@@ -1,7 +1,9 @@
 import fastify from "fastify";
 import { ZodError } from "zod";
 
-export const app = fastify();
+export const app = fastify({
+  logger: true,
+});
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {
