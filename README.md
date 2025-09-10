@@ -388,28 +388,6 @@ yarn test:integration:watch # Watch mode for integration tests
 - **Search Performance**: Response time logging
 - **Memory Usage**: Heap monitoring available
 
-## 🤝 Contributing
-
-### Code Quality
-
-- **TypeScript**: Strict type checking
-- **Biome**: Code linting and formatting
-- **Testing**: Comprehensive test coverage required
-- **Documentation**: Keep README and code comments updated
-
-### Testing Requirements
-
-- **Unit Tests**: All helpers and services must have tests
-- **Integration Tests**: API endpoints must be tested
-- **Performance Tests**: K6 tests for load validation
-
 ## 📝 License
 
 MIT License
-
-## 🙏 Acknowledgments
-
-- **IP2Location**: For providing the IP geolocation dataset
-- **Fastify**: High-performance web framework
-- **Vitest**: Modern testing framework
-- **K6**: Load testing tool
