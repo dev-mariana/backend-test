@@ -53,7 +53,7 @@ curl "http://localhost:3000/api/ip/location?ip=8.8.8.8"
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - Yarn package manager
 - K6 (for performance testing): `brew install k6`
 
@@ -98,7 +98,86 @@ yarn test:ui                # Interactive test UI
 - **Integration Tests (10)**: Full HTTP request/response cycle
 - **Performance Tests**: Concurrent load testing with K6
 
+### Testing Architecture Choices
+
+**🧪 Testing Strategy & Rationale:**
+
+1. **Vitest over Jest**:
+
+   - **Choice**: Modern testing framework with native TypeScript support
+   - **Rationale**: Faster execution, better TypeScript integration, modern API
+   - **Benefit**: No complex configuration needed
+
+2. **No Controller Unit Tests**:
+
+   - **Choice**: Skip isolated controller testing
+   - **Rationale**: Controllers are thin glue code, fully covered by integration tests
+   - **Implementation**: Focus testing on business logic (services/helpers)
+
+3. **Comprehensive Mocking Strategy**:
+
+   - **Choice**: Mock external dependencies (file system, app logging)
+   - **Rationale**: Isolated unit tests, faster execution, deterministic results
+   - **Implementation**: Mock at module level, test business logic in isolation
+
+4. **Integration Tests with Real Fastify**:
+
+   - **Choice**: Use `app.inject()` for full HTTP testing
+   - **Rationale**: Tests real request/response cycle including validation
+   - **Benefit**: Catches integration issues between layers
+
+5. **K6 for Performance Testing**:
+   - **Choice**: Professional load testing tool over simple scripts
+   - **Rationale**: Realistic concurrent user simulation, detailed metrics
+   - **Implementation**: Tests both response time and concurrency requirements
+
 ## 🏗️ Architecture
+
+### Design Principles
+
+**🎯 Architectural Choices & Rationale:**
+
+1. **Layered Architecture**: Clean separation of concerns
+
+   - Controllers → HTTP handling only
+   - Services → Business logic and data management
+   - Helpers → Pure utility functions
+   - Models → Type definitions
+
+2. **In-Memory Caching Strategy**:
+
+   - **Choice**: Load entire CSV into memory at startup
+   - **Rationale**: 330MB dataset fits in memory, enables <100ms responses
+   - **Trade-off**: Higher memory usage for faster query performance
+
+3. **Fastify over Express**:
+
+   - **Choice**: Fastify web framework
+   - **Rationale**: 2-3x faster than Express, built-in validation, TypeScript support
+   - **Benefit**: Handles 100+ concurrent users efficiently
+
+4. **Linear Search Algorithm**:
+
+   - **Choice**: Array.filter() for IP range matching
+   - **Rationale**: Simple, reliable, fast enough for requirements
+   - **Future**: Pre-sorted data ready for binary search upgrade
+
+5. **Functional Programming Approach**:
+
+   - **Choice**: Pure functions in helpers, minimal classes
+   - **Rationale**: Easier testing, better maintainability
+   - **Implementation**: Only service uses class for state management
+
+6. **Zod for Validation**:
+
+   - **Choice**: Schema-based validation over manual checks
+   - **Rationale**: Type-safe, comprehensive error messages, maintainable
+   - **Benefit**: Automatic TypeScript integration
+
+7. **Module-Level Caching**:
+   - **Choice**: Single service instance cached in controller
+   - **Rationale**: Avoid singleton pattern while preventing memory leaks
+   - **Implementation**: Lazy initialization on first request
 
 ### Project Structure
 
@@ -166,6 +245,34 @@ ipId = 16777216*a + 65536*b + 256*c + d
 - Response formatting and error handling
 
 ## ⚡ Performance Optimizations
+
+### Performance Architecture Choices
+
+**🚀 Performance Strategy & Rationale:**
+
+1. **Memory vs. Disk Trade-off**:
+
+   - **Choice**: Load entire 330MB CSV into RAM
+   - **Rationale**: Memory access (ns) vs disk access (ms) = 1000x faster
+   - **Trade-off**: Higher memory usage for sub-100ms response times
+   - **Scalability**: Acceptable for single-node deployment
+
+2. **Startup vs. Runtime Performance**:
+
+   - **Choice**: Accept 8-10 second startup time for fast runtime
+   - **Rationale**: One-time cost for consistent <100ms responses
+   - **Implementation**: Lazy loading on first request, cached thereafter
+
+3. **Search Algorithm Choice**:
+
+   - **Choice**: Linear search over binary search initially
+   - **Rationale**: Simpler implementation, meets performance requirements
+   - **Future**: Data pre-sorted for easy binary search upgrade if needed
+
+4. **Node.js Memory Configuration**:
+   - **Choice**: Increase heap size to 4GB
+   - **Rationale**: Default 1.4GB insufficient for 330MB dataset + overhead
+   - **Implementation**: `--max-old-space-size=4096` in startup scripts
 
 ### Memory Management
 
@@ -286,7 +393,7 @@ yarn test:integration:watch # Watch mode for integration tests
 ### Code Quality
 
 - **TypeScript**: Strict type checking
-- **ESLint/Biome**: Code linting and formatting
+- **Biome**: Code linting and formatting
 - **Testing**: Comprehensive test coverage required
 - **Documentation**: Keep README and code comments updated
 
@@ -298,7 +405,7 @@ yarn test:integration:watch # Watch mode for integration tests
 
 ## 📝 License
 
-MIT License - See LICENSE file for details
+MIT License
 
 ## 🙏 Acknowledgments
 
