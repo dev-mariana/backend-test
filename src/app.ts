@@ -1,9 +1,12 @@
 import fastify from "fastify";
 import { ZodError } from "zod";
+import { appRoutes } from "./routes/app.routes";
 
 export const app = fastify({
   logger: true,
 });
+
+app.register(appRoutes, { prefix: "api" });
 
 app.setErrorHandler((error, _, reply) => {
   if (error instanceof ZodError) {

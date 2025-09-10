@@ -1,25 +1,24 @@
-import { readFileSync } from "fs";
-import { app } from "../app";
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
-export function readCSVFile(filePath: string): string {
-  app.log.info(`Reading file: ${filePath}`);
+export async function readCSVLines(filePath: string): Promise<string[]> {
+  const lines: string[] = [];
+  const fileStream = createReadStream(filePath);
 
-  const fileContent = readFileSync(filePath, "utf-8");
+  const rl = createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
+  });
 
-  app.log.info(`File size: ${fileContent.length} characters`);
+  for await (const line of rl) {
+    if (line.trim()) {
+      lines.push(line);
+    }
+  }
 
-  return fileContent;
+  return lines;
 }
 
 export function splitIntoLines(fileContent: string): string[] {
-  app.log.info("Splitting file into lines...");
-
-  const lines = fileContent.split("\n");
-
-  const nonEmptyLines = lines.filter((line) => line.trim() !== "");
-
-  app.log.info(`Total lines: ${lines.length}`);
-  app.log.info(`Non-empty lines: ${nonEmptyLines.length}`);
-
-  return nonEmptyLines;
+  return fileContent.split("\n").filter((line) => line.trim() !== "");
 }
