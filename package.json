@@ -8,9 +8,12 @@
     "start": "node --max-old-space-size=4096 dist/server.js",
     "build": "tsx src/server.ts",
     "lint": "biome lint --fix",
+    "test": "node --import ts-node/register --test \"**/*.test.ts\"",
+    "test:unit": "vitest",
+    "test:unit:run": "vitest run",
+    "test:unit:ui": "vitest --ui",
     "test:performance": "k6 run ./test.js",
-    "test:performance:dashboard": "K6_WEB_DASHBOARD=true k6 run ./test.js",
-    "test": "node --import ts-node/register --test \"**/*.test.ts\""
+    "test:performance:dashboard": "K6_WEB_DASHBOARD=true k6 run ./test.js"
   },
   "license": "MIT",
   "devDependencies": {
@@ -19,7 +22,8 @@
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "author": "Mariana Bastos <m.b.rodrigues1998@gmail.com>",
   "dependencies": {
